@@ -5,6 +5,12 @@ from django import forms
 from .models import Profile, Policy
 
 
+class LoginForm(forms.Form):
+    """ Login Form """
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    
+
 class ProfileCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script 
+    src="https://code.jquery.com/jquery-3.5.1.js" 
+    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+    crossorigin="anonymous">
+</script>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+      <style>
+        body {
+          background: lightblue;
+
+        }
+        #authorization {
+          background: white;
+          color: black;
+          display: inline-block;
+          border-radius: 1em;
+          padding: 1em;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin-right: -50%;
+          transform: translate(-50%, -50%);
+          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+        }
+        #authorization > h1 {
+          color: red;
+          text-align: center;
+          border-bottom: 2px solid black;
+          border-radius: 50%;
+        } 
+        #authorization > input {
+          padding: 0 5px;
+          margin: 15px;
+        }
+        .field {
+          display: flex;
+          margin: 15px 0;
+        }
+
+        p {
+          margin:0;
+        }
+
+        #login {
+          margin: auto;
+        }
+      </style>
+
+    <div id="authorization">
+      <h1>Secret Keeper</h1>
+      <form action='/login' method="post">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Log-in"></p>
+        <!-- <div class='field'><p>Hello:    </p><input id='1'></div>
+        <div class='field'><p>Hello: </p><input id='2' type="password"></div>
+        <input type="submit" id='login' onclick=""> -->
+      </form>
+    </div>
+</body>
+</html>
