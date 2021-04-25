@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt # Del after
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth 
 
+from .models import Group, Account
 from .forms import LoginForm
 
 # Create your views here.
 def index(request):
     if request.user.is_authenticated:
-        return render(request, 'main/index.html')
+        groups = Group.objects.filter(user=request.user)
+        return render(request, 'main/index.html', {'groups': groups})
     else:
         # Error
         print("NON NONON")
@@ -39,3 +42,21 @@ def logout(request):
     if request.user.is_authenticated:
         auth.logout(request)
     return redirect(index)
+
+# API
+@login_required
+def new_group(request):
+    # TODO Add conditions later
+    user = request.user
+    name = request.POST['name']
+    a = Group(user=user, name=name)
+    a.save()
+    return JsonResponse({'status': 'success', 'id': a.id})
+
+@login_required
+def del_group(request):
+    # TODO Add conditions later
+    id = request.POST['id']
+    a = Group.objects.filter(id=id)
+    a.delete()
+    return JsonResponse({'status': 'success', 'id': id})
