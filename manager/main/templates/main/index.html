@@ -53,124 +53,97 @@
             flex-wrap: wrap;
         }
     </style>
-<script>
-    // Set CSRF Token
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
 
-    $(document).ready(function(){
-        csrftoken = $("input[name=csrfmiddlewaretoken]").attr("value")
+    <script>
+        // Set CSRF Token
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
 
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        $(document).ready(function(){
+            csrftoken = $("input[name=csrfmiddlewaretoken]").attr("value")
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
                 }
-            }
+            });
         });
-    });
-    
-    // Next part
-    // Close popul if click ovveride
-    $(document).on('click', '#popup', function(e){
-        if(!$(e.target).closest(".popup").length) {
-            $('.popup').fadeOut(200).after(function(e){
-                $('#popup').fadeOut(300)
-                cleanUp()
-            })
-        }
-    })
-    // Or if click Escape
-    $(document).keyup(function(e) {
-        if(e.keyCode == 27 && $('.popup').is(":visible")) {
-            $('.popup').fadeOut(200).after(function(e){
-                $('#popup').fadeOut(300)
-                cleanUp()
-            })
-        }
-    })
+        
+        // Next part
+        // Close popul if click ovveride
+        $(document).on('click', '#popup', function(e){
+            if(!$(e.target).closest(".popup").length) {
+                $('.popup').fadeOut(200).after(function(e){
+                    $('#popup').fadeOut(300)
+                    cleanUp()
+                })
+            }
+        })
+        // Or if click Escape
+        $(document).keyup(function(e) {
+            if(e.keyCode == 27 && $('.popup').is(":visible")) {
+                $('.popup').fadeOut(200).after(function(e){
+                    $('#popup').fadeOut(300)
+                    cleanUp()
+                })
+            }
+        })
 
-    $(document).on('click', '.end', function(e){
-        $('#popup').fadeIn(300)
-        $('#popup_group').fadeIn(300)
-    })
+        $(document).on('click', '#end', function(e){
+            $('#popup').fadeIn(300)
+            $('#popup_group').fadeIn(300)
+        })
 
-    $(document).on('click', '.add-account', function(e){
-        group_id = $(e.target).parent().parent().attr('id')
-        $('#popup').fadeIn(300)
-        $('#popup_account').fadeIn(300)
-    })
+        $(document).on('click', '.add-account', function(e){
+            group_id = $(e.target).parent().parent().attr('id')
+            $('#popup').fadeIn(300)
+            $('#popup_account').fadeIn(300)
+        })
 
-    $(document).on('click', '.group', function(e){
-        if(!$(e.target).hasClass('group')) return NaN 
-        $('li').removeClass('selected-group')
-        $('.actions').remove()
-        $(e.target).addClass('selected-group')
-        $(e.target).append(`
-            <div class='actions'><span class='sidebar-action add-account'>+</span><span class='sidebar-action del-group'>x</span></div>
-        `)
-        // Get Accounts to the group
-        var id = $(e.target).parent().parent().attr('id')
-        var accounts = getAccounts(id)
+        $(document).on('click', '.group', function(e){
+            if(!$(e.target).hasClass('group')) return NaN 
+            $('div').removeClass('selected-group')
+            $('.actions').remove()
+            $(e.target).addClass('selected-group')
+            $(e.target).append(`
+                <div class='actions'><span class='sidebar-action add-account'>+</span><span class='sidebar-action del-group'>x</span></div>
+            `)
+            // Get Accounts to the group
+            // var id = $(e.target).parent().parent().attr('id')
+            // var accounts = getAccounts(id)
 
-    })
+        })
 
-
-    $(document).on('click', '.click', function(e){
-        group_id = $(e.target).parent().attr('id')
-        $('#popup').fadeIn(300)
-        $('#popup_account_show').fadeIn(300)
-    })
-    
-    $(document).on('click', '.del-group', function(e){
-        delGroup(e)
-    })
+        $(document).on('click', '.click', function(e){
+            group_id = $(e.target).parent().attr('id')
+            $('#popup').fadeIn(300)
+            $('#popup_account_show').fadeIn(300)
+        })
+        
+        $(document).on('click', '.del-group', function(e){
+            delGroup(e)
+        })
 
 
-</script>
+    </script>
 
-<div id=sidebar>
+<!-- Left Sidebar -->
+<section id=sidebar>
     <header>
         Secret Keeper
     </header>
-    <ul id='group-list'>
-        <div id='list'>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-
+    <section id='group-list'>
+        <div class="group" >Name</div>
         {% for group in groups %}
-            <li class="group" id="{{ group.id }}">{{ group.name }}</li>
+            <div class="group" id="{{ group.id }}">{{ group.name }}</div>
         {% endfor %}
-        <li class='end'>Add group</li>
-        </div>
-
-    </ul>
-</div>
+    </section>
+    <div id='end'>Add group</div>
+</section>
 
 <div id='super_body'>
     <!-- Headers -->
