@@ -66,6 +66,8 @@ body {
     background-color: #2A383F;
 }
 
+/* END SIDEBAR BLOCK */
+
 .actions span {
   width: 18px;
   height: 18px;
@@ -201,7 +203,12 @@ body {
 
 #popup_account {
   width: 300px;
-  height: 350px;
+  height: 450px;
+}
+
+#popup_account_show {
+  width: 300px;
+  height: 450px;
 }
 
 #popup_group > .pop_field {
