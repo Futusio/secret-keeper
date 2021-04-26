@@ -13,8 +13,6 @@ def index(request):
         groups = Group.objects.filter(user=request.user)
         return render(request, 'main/index.html', {'groups': groups})
     else:
-        # Error
-        print("NON NONON")
         form = LoginForm()
         return render(request, 'main/login.html', {'form': form})
 
@@ -60,3 +58,27 @@ def del_group(request):
     a = Group.objects.filter(id=id)
     a.delete()
     return JsonResponse({'status': 'success', 'id': id})
+
+@login_required
+def get_accounts(request):
+    group = Group.objects.get(id=request.POST['group_id'])
+    accounts = Account.objects.filter(group=group)
+    # result = {}
+    # for account in accounts:
+
+    return JsonResponse({'status': 'success', 'accounts': None})
+
+
+@login_required
+def add_account(request):
+    group = Group.objects.get(id=request.POST['group_id'])
+    a = Account(
+        user=request.user, group=group, 
+        name=request.POST['name'], password=request.POST['password'],
+        login=request.POST['login'], url=request.POST['url'], 
+        description=request.POST['description']
+        )
+
+    a.save()
+
+    return JsonResponse({'status': 'success'})

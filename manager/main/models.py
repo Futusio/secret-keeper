@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
@@ -90,7 +92,7 @@ class Account(models.Model):
     login = models.CharField(max_length=128)
     password = models.CharField(max_length=256)
     description = models.TextField()
-    last_update = models.DateTimeField()
+    last_update = models.DateTimeField(default=datetime.now)
 
 
 class Policy(models.Model):
