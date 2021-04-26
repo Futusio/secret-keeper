@@ -61,12 +61,30 @@ def del_group(request):
 
 @login_required
 def get_accounts(request):
+    # Return All accounts of the group
     group = Group.objects.get(id=request.POST['group_id'])
     accounts = Account.objects.filter(group=group)
-    # result = {}
-    # for account in accounts:
+    result = {}
+    for account in accounts:
+        result.update({account.id: {
+            'name': account.name,
+            'description': account.description,
+        }})
 
-    return JsonResponse({'status': 'success', 'accounts': None})
+    return JsonResponse({'status': 'success', 'accounts': result})
+
+@login_required
+def get_account(request):
+    # Return all 
+    account = Account.objects.get(id=request.POST['account_id'])
+    result = {
+        'name': account.name,
+        'login': account.login,
+        'password': account.password, 
+        'url': account.url,
+        'description': account.description
+    }
+    return JsonResponse({'status': 'success', 'account': result})
 
 
 @login_required
@@ -80,5 +98,5 @@ def add_account(request):
         )
 
     a.save()
-
-    return JsonResponse({'status': 'success'})
+    result = {'id': a.id, 'name': a.name, 'description': a.description}
+    return JsonResponse({'status': 'success', 'account': result})

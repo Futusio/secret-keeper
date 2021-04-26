@@ -53,124 +53,98 @@
             flex-wrap: wrap;
         }
     </style>
-<script>
-    // Set CSRF Token
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
 
-    $(document).ready(function(){
-        csrftoken = $("input[name=csrfmiddlewaretoken]").attr("value")
+    <script>
+        // Set CSRF Token
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
 
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        $(document).ready(function(){
+            csrftoken = $("input[name=csrfmiddlewaretoken]").attr("value")
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
                 }
-            }
+            });
         });
-    });
-    
-    // Next part
-    // Close popul if click ovveride
-    $(document).on('click', '#popup', function(e){
-        if(!$(e.target).closest(".popup").length) {
-            $('.popup').fadeOut(200).after(function(e){
-                $('#popup').fadeOut(300)
-                cleanUp()
-            })
-        }
-    })
-    // Or if click Escape
-    $(document).keyup(function(e) {
-        if(e.keyCode == 27 && $('.popup').is(":visible")) {
-            $('.popup').fadeOut(200).after(function(e){
-                $('#popup').fadeOut(300)
-                cleanUp()
-            })
-        }
-    })
+        
+        // Next part
+        // Close popul if click ovveride
+        $(document).on('click', '#popup', function(e){
+            if(!$(e.target).closest(".popup").length) {
+                $('.popup').fadeOut(200).after(function(e){
+                    $('#popup').fadeOut(300)
+                    cleanUp()
+                })
+            }
+        })
+        // Or if click Escape
+        $(document).keyup(function(e) {
+            if(e.keyCode == 27 && $('.popup').is(":visible")) {
+                $('.popup').fadeOut(200).after(function(e){
+                    $('#popup').fadeOut(300)
+                    cleanUp()
+                })
+            }
+        })
 
-    $(document).on('click', '.end', function(e){
-        $('#popup').fadeIn(300)
-        $('#popup_group').fadeIn(300)
-    })
+        $(document).on('click', '#end', function(e){
+            $('#popup').fadeIn(300)
+            $('#popup_group').fadeIn(300)
+        })
 
-    $(document).on('click', '.add-account', function(e){
-        group_id = $(e.target).parent().parent().attr('id')
-        $('#popup').fadeIn(300)
-        $('#popup_account').fadeIn(300)
-    })
+        $(document).on('click', '.add-account', function(e){
+            group_id = $(e.target).parent().parent().attr('group-id')
+            $('#popup').fadeIn(300)
+            $('#popup_account').fadeIn(300)
+        })
 
-    $(document).on('click', '.group', function(e){
-        if(!$(e.target).hasClass('group')) return NaN 
-        $('li').removeClass('selected-group')
-        $('.actions').remove()
-        $(e.target).addClass('selected-group')
-        $(e.target).append(`
-            <div class='actions'><span class='sidebar-action add-account'>+</span><span class='sidebar-action del-group'>x</span></div>
-        `)
-        // Get Accounts to the group
-        var id = $(e.target).parent().parent().attr('id')
-        var accounts = getAccounts(id)
+        $(document).on('click', '.group', function(e){
+            if(!$(e.target).hasClass('group')) return NaN 
+            $('div').removeClass('selected-group')
+            $('.actions').remove()
+            $(e.target).addClass('selected-group')
+            $(e.target).append(`
+                <div class='actions'><span class='sidebar-action add-account'>+</span><span class='sidebar-action del-group'>x</span></div>
+            `)
+            // Get Accounts to the group
+            var id = $(e.target).attr('group-id')
+            accounts = getAccounts(id)
+            // console.log(accounts)
 
-    })
+        })
 
+        $(document).on('click', '.click', function(e){
+            accountId = $(e.target).parent().attr('account-id')
+            getAccount(accountId)
+            $('#popup').fadeIn(300)
+            $('#popup_account_show').fadeIn(300)
+        })
+        
+        $(document).on('click', '.del-group', function(e){
+            delGroup(e)
+        })
 
-    $(document).on('click', '.click', function(e){
-        group_id = $(e.target).parent().attr('id')
-        $('#popup').fadeIn(300)
-        $('#popup_account_show').fadeIn(300)
-    })
-    
-    $(document).on('click', '.del-group', function(e){
-        delGroup(e)
-    })
+    </script>
 
-
-</script>
-
-<div id=sidebar>
+<!-- Left Sidebar -->
+<section id=sidebar>
     <header>
         Secret Keeper
     </header>
-    <ul id='group-list'>
-        <div id='list'>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-            <li class="group" >Name</li>
-
+    <section id='group-list'>
         {% for group in groups %}
-            <li class="group" id="{{ group.id }}">{{ group.name }}</li>
+            <div class="group" group-id="{{ group.id }}">{{ group.name }}</div>
         {% endfor %}
-        <li class='end'>Add group</li>
-        </div>
-
-    </ul>
-</div>
+    </section>
+    <div id='end'>Add group</div>
+</section>
+<!-- End Sidebar -->
 
 <div id='super_body'>
     <!-- Headers -->
@@ -178,7 +152,7 @@
         <h3 style='margin: 0;'>Hello, biitch</h3>
             <form action="/logout" method="POST">
                 {% csrf_token %}
-                <input type="submit" value="logout">
+                <button type="submit" value="logout">Exit</button>
             </form>
     </div>
     <!-- Main Screen includes accounts and notifications -->
@@ -188,64 +162,7 @@
                 <div class='name'>Hello, bitch</div>
                 <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
                 <div class='click' >открыть</div>
-            </div>
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>   
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click' onclick="">открыть</div>
-            </div>   
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>   
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>     
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>   
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>   
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>   
-
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>     
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>     
-            
-            <div class='min-account'>
-                <div class='name'>Hello, bitch</div>
-                <div class='description'>A very large text A very large textA very large text A very large text A very large text A very large text A very large text </div>
-                <div class='click'>открыть</div>
-            </div>     
+            </div> 
         </div>
         
         <div id='notifications'>
@@ -255,8 +172,8 @@
     </div>
 </div> 
 
+<!-- PopUp Behind -->
 <div class="b-popup" id="popup" style="display: none;">
-    <!-- Message window-->
     <!-- Group popUp -->
     <div class="popup" id='popup_group' style="display: none;">
         <div class='pop_head'><p>Новая группа</p></div>
@@ -265,7 +182,7 @@
             <button style="border-bottom-right-radius: 3px;;border-bottom-left-radius: 3px;" onclick="addGroup()">Создать</button>
         </div>
     </div>
-    <!-- Usability popUp -->
+    <!-- Create Account -->
     <div class='popup' id='popup_account' style="display: none;">
         <div class='pop_head'><p>Создать аккаунт</p></div>
         <div class='pop_field'><p>Название:</p><input id='account_name' autocomplete="off"/></div>
@@ -273,31 +190,43 @@
         <div class='pop_field'><p>Пароль:</p><input type="password" id='account_password'autocomplete="new-password"/></div>
         <div class='pop_field'><p>URL:</p><input id='account_url' autocomplete="off"/></div>
         <div class='pop_field dsc'><p>Описание:</p><br><small class='pop_small'>необязательно</small></div>
-        <div class="pop_field"><textarea id='account_description'></textarea></div>
+        <div class="pop_field" id='description'><textarea id='account_description_show'></textarea></div>
         <div class='pop_footer'>
             <button style=" border-bottom-right-radius: 3px;" id='create_account' onclick="addAccount()">Создать</button>
         </div>
     </div>
+    <!-- Show account -->
     <div class='popup' id='popup_account_show' style="display: none;">
         <div class='pop_head'><p>Аккаунт</p></div>
-        <div class='pop_field'><p>Название:</p><input id='account_name' disabled autocomplete="off"/></div>
-        <div class='pop_field'><p>Логин:</p><input id='account_login' disabled autocomplete="off"/></div>
-        <div class='pop_field'><p>Пароль:</p><input type="password" disabled id='account_password'autocomplete="new-password"/></div>
-        <div class='pop_field'><p>URL:</p><input id='account_url' disabled autocomplete="off"/></div>
+        <div class='pop_field'><p>Название:</p><input id='account_name_show' disabled autocomplete="off"/></div>
+        <div class='pop_field'><p>Логин:</p><input id='account_login_show' disabled autocomplete="off"/></div>
+        <div class='pop_field'><p>Пароль:</p><input type="password" disabled id='account_password_show'autocomplete="new-password"/></div>
+        <div class='pop_field'><p>URL:</p><input id='account_url_show' disabled autocomplete="off"/></div>
         <div class='pop_field dsc'><p>Описание:</p></div>
-        <div class="pop_field"><textarea disabled id='account_description'></textarea></div>
+        <div class="pop_field" id='description'><textarea disabled id='account_description_show'></textarea></div>
         <div class='pop_footer'>
             <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;">Изменить</button>
-            <button style=" border-bottom-right-radius: 3px;" id='create_account' onclick="addAccount()">Удалить</button>
+            <button style=" border-bottom-right-radius: 3px;" id='del-account' onclick="delAccount()">Удалить</button>
         </div>
     </div>
+    <!--  -->
 </div>
-
-    <div class="b-popup" id="popup_z" style="display: none;">
-        <div class="popup" id="popup-message" style="display: none;">
-            <div class='pop_field'><p align="center" id='message_text'></p></div>
+<!-- Messages Block -->
+<div class="b-popup" id="popup_z" style="display: none;" >
+    <!-- Simple Message -->
+    <div class="popup" id="popup-message" style="display: none;">
+        <div class='pop_field'><p align="center" id='message_text'></p></div>
+    </div>
+    <!-- Confirm Message -->
+    <div class="popup" id="popup-confirm" style="display: none;">
+        <div class='pop_field'><p align="center" id='confirm_text'></p></div>
+        <div class='pop_footer'>
+            <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;">Да</button>
+            <button style=" border-bottom-right-radius: 3px;" id='del-account'>Нет</button>
         </div>
     </div>
+    <!--  -->
+</div>
 
 </body>
 </html> 
