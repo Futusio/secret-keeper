@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+<!-- 
+#popup-message {
+  width: 200px;
+  top: 72px;
+  z-index: 999;
+}
+
+#popup-confirm { 
+  min-width: 250px;
+  max-width: 350px;
+  min-height: 90px;
+  top: 125px;
+  z-index: 999;
+}
+
+#popup-confirm .pop_field{
+  justify-content: center;
+  min-height: 90px;
+}
+
+#popup-message .pop_field{
+  justify-content: center;
+}
+     -->
+
+<style>
+    .b-popup{
+        width:100%;
+        min-height:100%;
+        background-color: rgba(0,0,0,0.5);
+        overflow:hidden;
+        position:fixed;
+        top:0px;
+    }
+
+    .popup {
+        background-color: #EDF0F2;
+        color: #4B555B;
+        padding: None;
+        border-radius: 3px;
+        min-width: 150px;
+        max-width: 300px;
+        top: 40%;
+        left: 50%;
+        margin-right: -50%;
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        transform: translate(-50%, -50%);
+    }
+
+    .popup > div {  
+        height: 48px;
+        max-height: 96px;
+
+    }
+    /* Head */
+    .pop_head {
+        line-height: 48px;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        outline: 1px solid #7C868D;
+        text-align: center;
+    }
+
+    .pop_head p {
+        font-size: 18px;
+        letter-spacing: 0.15rem;
+        padding: 0;
+        margin: 0;
+    }
+    /* Fields */
+    .pop_field {
+        display: flex;
+        justify-content: space-between;
+        line-height: 16px;
+        align-items: center;
+        padding: 0 10px;
+        margin: 3px 0;
+    }
+
+    .pop_field p {
+        font-size: 16px;
+    }
+    /* Inputs  */
+    .pop_field input {
+        padding-left: 7px;
+        color: gray;
+        background-color: #F6F8FA;
+        border: 1px solid #B2BAC0;
+        height: 22px;
+    }
+
+    .pop_field input:focus{
+        color: #637C8D;
+        outline: none;
+    }
+    /* Textarea */
+    .pop_small { 
+        padding-top: 30px;
+        color: gray;
+    }
+
+    #description {
+        min-height: 90px;
+        margin: 0px 0px 20px 0;
+    }
+    textarea {
+        font-family: 'Roboto', sans-serif;
+        padding-left: 7px;
+        padding-top: 5px;
+        color: gray;
+        background-color: #F6F8FA;
+        border: 1px solid #B2BAC0;
+        height: 90px;
+        width: 100%;
+        resize: none;
+    }
+
+    textarea:focus{
+        color: #637C8D;
+        outline: none;
+    } 
+    /* Footer */
+    .pop_footer {
+        display: flex;
+        justify-content: space-evenly;
+        bottom: 0;
+        width: 100%;
+        font-size: 18px;
+        outline: 1px solid #7C868D;
+    }
+
+    .pop_footer button {
+        letter-spacing: 0.15rem;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        font: inherit;
+        color: inherit;
+        background-color: transparent;
+        align-items: center;
+        border: none;
+        outline: none;
+    }
+
+    .pop_footer button:hover{
+        cursor: pointer;
+        background-color: rgb(31, 37, 40, 0.35);
+        color: #EDF0F2;
+    }
+</style>
+
+<div class="b-popup" id="popup"></div>
+    <!-- <div class="popup" id='popup_group'>
+        <div class='pop_head'><p>Новая группа</p></div>
+        <div class='pop_field'><p>Название:</p><input id='new_group'/></div>
+        <div class='pop_field'><p>Название:</p><input id='new_group'/></div>
+        <div class='pop_field'><p>Название:</p><input id='new_group'/></div>
+        <div class='pop_footer'>
+            <button style="border-bottom-right-radius: 3px;;border-bottom-left-radius: 3px;" onclick="addGroup()">Создать</button>
+        </div>
+    </div> -->
+
+
+
+    <div class='popup' id='popup_account_show'>
+        <div class='pop_head'><p>Аккаунт</p></div>
+        <div class='pop_field'><p>Название:</p><input id='account_name_show' autocomplete="off"/></div>
+        <div class='pop_field'><p>Логин:</p><input id='account_login_show' autocomplete="off"/></div>
+        <div class='pop_field'><p>Пароль:</p><input type="password" id='account_password_show'autocomplete="new-password"/></div>
+        <div class='pop_field'><p>URL:</p><input id='account_url_show' autocomplete="off"/></div>
+        <div class='pop_field'><p>Описание:</p><small class='pop_small'>необязательно</small></div>
+        <div class="pop_field" id='description'><textarea id='account_description_show'></textarea></div>
+        <div class='pop_footer'>
+            <!-- <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;">Изменить</button> -->
+            <button style=" border-bottom-right-radius: 3px;" id='del-account' onclick="delAccount()">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="b-popup" id="popup">
+    <div class="popup" id="popup-message" >
+        <div class='pop_field'><p align="center" id='message_text'>Some textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome text</p></div>
+    </div>
+    
+
+    <div class="popup" id="popup-confirm" style="display: none;">
+        <div class='pop_field'><p align="center" id='confirm_text'>Some text</p></div>
+        <div class='pop_footer'>
+            <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;">Да</button>
+            <button style=" border-bottom-right-radius: 3px;" id='del-account'>Нет</button>
+        </div>
+    </div>
+</div> -->
+</body>
+</html>

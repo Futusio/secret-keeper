@@ -75,7 +75,7 @@ body {
   border-bottom: 1px solid #44555E;
 }
 
-#sidebar div:hover {
+#sidebar div:not(.actions):hover {
   font-size: 16px;
   line-height: 52px;
   border-bottom: 1px solid #44555E;
@@ -187,56 +187,33 @@ body {
   top:0px;
 }
 
-.b-popup > div {
+.popup {
   background-color: #EDF0F2;
   color: #4B555B;
   padding: None;
   border-radius: 3px;
+  min-width: 200px;
+  max-width: 300px;
   top: 40%;
   left: 50%;
   margin-right: -50%;
   position: absolute;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
   transform: translate(-50%, -50%);
 }
 
-#popup-message {
-  width: 200px;
-  top: 72px;
-  z-index: 999;
-}
-#popup-message .pop_field{
-  justify-content: center;
+.popup > div {  
+  height: 48px;
 }
 
-#popup_group {
-  width: 300px;
-  height: 140px;
-  top: 40%;
-}
-
-#popup_account {
-  width: 300px;
-  height: 450px;
-}
-
-#popup_account_show {
-  width: 300px;
-  height: 450px;
-}
-
-#popup_group > .pop_field {
-  display: flex;
-  justify-content: space-evenly;
-}
-
+/* Head */
 .pop_head {
-  height: 48  px;
   line-height: 48px;
   padding: 0;
   margin: 0;
   width: 100%;
-  border-bottom: 1px solid #7C868D;
+  outline: 1px solid #7C868D;
   text-align: center;
 }
 
@@ -247,19 +224,20 @@ body {
   margin: 0;
 }
 
+/* Fields */
 .pop_field {
   display: flex;
   justify-content: space-between;
   line-height: 16px;
   align-items: center;
   padding: 0 10px;
+  margin: 3px 0;
 }
 
 .pop_field p {
-  /* BLANK  */
   font-size: 16px;
 }
-
+/* Inputs  */
 .pop_field input {
   padding-left: 7px;
   color: gray;
@@ -269,60 +247,19 @@ body {
 }
 
 .pop_field input:focus{
-  /* font-size: 16px; */
   color: #637C8D;
   outline: none;
 }
-
-.pop_footer {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  height: 40px;
-  line-height: 40px;
-  position: absolute;
-  bottom: 0;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  border-top: 1px solid #7C868D;
-  text-align: center;
-}
-
-.pop_footer button {
-  width: 100%;
-  padding: 0;
-  font: inherit;
-  color: inherit;
-  background-color: transparent;
-  align-items: center;
-  border: none;
-  outline: none;
-}
-
-.pop_footer button:hover{
-  cursor: pointer;
-  background-color: rgb(31, 37, 40, 0.35);
-  color: #EDF0F2;
-}
-
-.pop_footer button:focus{
-  cursor: pointer;
-  background-color: rgb(31, 37, 40, 0.35);
-  color: #EDF0F2;
-}
-
-/* .dsc {
-  flex-direction: column;
-  justify-content: right;
-  background-color: rgb(144, 119, 168);
-} */
-
-.pop_small {
+/* Textarea */
+.pop_small { 
   padding-top: 30px;
   color: gray;
 }
 
+#description {
+  min-height: 90px;
+  margin: 0px 0px 20px 0;
+}
 textarea {
   font-family: 'Roboto', sans-serif;
   padding-left: 7px;
@@ -338,4 +275,32 @@ textarea {
 textarea:focus{
   color: #637C8D;
   outline: none;
+} 
+/* Footer */
+.pop_footer {
+  display: flex;
+  justify-content: space-evenly;
+  bottom: 0;
+  width: 100%;
+  font-size: 18px;
+  outline: 1px solid #7C868D;
+}
+
+.pop_footer button {
+  letter-spacing: 0.15rem;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  align-items: center;
+  border: none;
+  outline: none;
+}
+
+.pop_footer button:hover{
+  cursor: pointer;
+  background-color: rgb(31, 37, 40, 0.35);
+  color: #EDF0F2;
 }
