@@ -86,6 +86,13 @@ def get_account(request):
     }
     return JsonResponse({'status': 'success', 'account': result})
 
+@login_required
+def del_account(request):
+    account = Account.objects.get(id=request.POST['account_id'])
+    id = account.id
+    account.delete()
+    return JsonResponse({'status': 'success', 'id': id})
+
 
 @login_required
 def add_account(request):
@@ -97,6 +104,20 @@ def add_account(request):
         description=request.POST['description']
         )
 
+    a.save()
+    result = {'id': a.id, 'name': a.name, 'description': a.description}
+    return JsonResponse({'status': 'success', 'account': result})
+
+@login_required
+def upd_account(request):
+    data = request.POST
+    a = Account.objects.get(id=data['account_id'])
+    print(data)
+    a.name = data['name']
+    a.login = data['login']
+    a.password = data['password']
+    a.url = data['url']
+    a.description = data['description']
     a.save()
     result = {'id': a.id, 'name': a.name, 'description': a.description}
     return JsonResponse({'status': 'success', 'account': result})

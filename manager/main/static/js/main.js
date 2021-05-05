@@ -21,23 +21,25 @@ class Validator {
 
 function showMessage(text){
     $('#message_text').text(text)
-    $('#popup_z').fadeIn(300).delay(600).fadeOut(300)
-    $('#popup-message').fadeIn(300).delay(500).fadeOut(300)
-}
+    if($('#popup_z').is(":visible")){
+        console.log(("I m here"))
+        $('#popup-message').fadeIn(300).delay(500).fadeOut(300)
+        $('#popup_z').delay(600).fadeOut(400)
+    } else {
+        $('#popup_z').fadeIn(300).delay(600).fadeOut(300)
+        $('#popup-message').fadeIn(300).delay(500).fadeOut(300)
+    }
 
-function showConfirm(text) {
-    $('#confirm_text').text(text)
-    $('#popup_z').fadeIn(300)
-    $('#popup-confirm').fadeIn(400)
 }
 
 
 function cleanUp(){
     // Function close all popUps and clear their fields
-    $('input').val('')
-    $('textare').val('')
     $('.popup').fadeOut(200).after(function(e){
-        $('#popup').fadeOut(300)
+        $('#popup').fadeOut(300).after(function(e){
+            $('input').val('')
+            $('textarea').val('')
+        })
     })
 }
 
@@ -75,9 +77,8 @@ function addGroup() {
 }
 
 
-function delGroup(e) {
+function delGroup(id) {
     // function to del group by name 
-    var id = $(e.target).parent().parent().attr('group-id')
     $.ajax({
         method: 'POST',
         url: '/api/del-group',
@@ -85,7 +86,8 @@ function delGroup(e) {
         success: function (response) {
             if(response['status'] == 'success') {
                 showMessage('Группа успешно удалена')
-                $(e.target).parent().parent().remove()
+                $('#screen').html('')
+                $(`[group-id=${id}]`).remove()
             } else {
                 showMessage('Неизвестная ошибка')
             }
@@ -152,10 +154,15 @@ function addAccount() {
                 showMessage('Аккаунт успешно создан')
                 cleanUp()
                 var account = response['account']
+                if(account.description == "") {
+                    var description = 'Для данного аккаунта описание отсутствует'
+                } else {
+                    var description = 'Для данного аккаунта описание отсутствует'
+                }
                 $('#screen').append(`
                 <div class='min-account' account-id=${account.id}>
                     <div class='name'>${account.name}</div>
-                    <div class='description' align='center'>${account.description}</div>
+                    <div class='description' align='center'>${description}</div>
                     <div class='click'>открыть</div>
                 </div>   
                 `)
@@ -178,15 +185,14 @@ function getAccount(id) {
         data: {'account_id': id},
         success: function (response) {
             if(response['status'] == 'success') {
-                console.log("A ME HRER")
                 var account = response['account']
-                console.log(account.name)
+                $('#popup').fadeIn(300)
+                $('#popup_account_show').fadeIn(300)
                 $('#account_name_show').val(account.name)
                 $('#account_login_show').val(account.login)
                 $('#account_password_show').val(account.password)
                 $('#account_url_show').val(account.url)
                 $('#account_description_show').val(account.description)
-
             } else {
                 showMessage('Ошибка получения информации об аккаунте')
                 cleanUp()
@@ -200,24 +206,17 @@ function getAccount(id) {
 }
 
 
-function delAccount(e) {
+function delAccount(id) {
     // Functions make a request to get all accounts of some group
-
-    // After okno
     $.ajax({
         method: 'POST',
         url: '/api/del-account',
-        data: {'account_id': accountId},
+        data: {'account_id': id},
         success: function (response) {
             if(response['status'] == 'success') {
-                var account = response['account']
-                console.log(account.name)
-                $('#account_name_show').val(account.name)
-                $('#account_login_show').val(account.login)
-                $('#account_password_show').val(account.password)
-                $('#account_url_show').val(account.url)
-                $('#account_description_show').val(account.description)
-
+                cleanUp()
+                showMessage('Аккаунт успешно удален')
+                $(`[account-id=${id}]`).remove()
             } else {
                 showMessage('Ошибка получения информации об аккаунте')
                 cleanUp()
@@ -231,9 +230,50 @@ function delAccount(e) {
 }
 
 
-function updateAccount() {
-    // Functions make a request to get all accounts of some group
+function updAccount(accountId) {
+    var data = {
+        'account_id': accountId,
+        'name': $('#account_name_upd').val(),
+        'login': $('#account_login_upd').val(),
+        'password': $('#account_password_upd').val(),
+        'url': $('#account_url_upd').val(),
+        'description': $('#account_description_upd').val(),
+    }
 
+    $.ajax({
+        method: 'POST',
+        url: '/api/upd-account',
+        data: data,
+        success: function (response) {
+            if(response['status'] == 'success') {
+                showMessage('Аккаунт успешно обновлен')
+                cleanUp()
+                var account = response['account']
+                if(account.description == "") {
+                    var description = 'Для данного аккаунта описание отсутствует'
+                } else {
+                    var description = 'Для данного аккаунта описание отсутствует'
+                }
+                $(`[account-id=${account.id}]`).html(`
+                    <div class='name'>${account.name}</div>
+                    <div class='description' align='center'>${description}</div>
+                    <div class='click'>открыть</div>
+                `)
+                // $('#screen').append(`
+                // <div class='min-account' account-id=${account.id}>
+                //     <div class='name'>${account.name}</div>
+                //     <div class='description' align='center'>${account.description}</div>
+                //     <div class='click'>открыть</div>
+                // </div>   
+                // `)
+            } else {
+                showMessage('Неизвестная ошибка')
+            }
+        },
+        error: function (e) {
+            showMessage('Неизвестная ошибка')
+        }
+    })
 }
 
 
