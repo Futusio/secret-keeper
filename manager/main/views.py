@@ -18,21 +18,20 @@ def index(request):
 
 # Authorizate
 def login(request):
+    print(request.POST)
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = auth.authenticate(username=cd['username'], password=cd['password'])
-            if user is not None:
-                if user.is_active:
-                    auth.login(request, user)
-                    return redirect(index)
-                else:
-                    return HttpResponse('Disabled account')
+        data = request.POST
+        user = auth.authenticate(username=data['login'], password=data['password'])
+        if user is not None:
+            if user.is_active:
+                auth.login(request, user)
+                return redirect(index)
             else:
-                return HttpResponse('Invalid login')
+                return redirect(index)
+        else:
+            return redirect(index)
     else:
-        form = LoginForm()
+        return redirect(index)
     return HttpResponse('Invalid request')
 
 @login_required
