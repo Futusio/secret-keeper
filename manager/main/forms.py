@@ -7,8 +7,10 @@ from .models import Profile, Policy
 
 class LoginForm(forms.Form):
     """ Login Form """
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(label='', widget=forms.TextInput(
+        attrs={'placeholder': 'Введите логин', 'autocomplete': 'off'}))
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={'placeholder': 'Введите пароль', 'autocomplete': 'new-password'}), label='')
     
 
 class ProfileCreationForm(forms.ModelForm):
