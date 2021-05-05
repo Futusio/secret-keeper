@@ -37,7 +37,7 @@ function cleanUp(){
     // Function close all popUps and clear their fields
     $('.popup').fadeOut(200).after(function(e){
         $('#popup').fadeOut(300).after(function(e){
-            $('input').val('')
+            $('input').not("input[name=csrfmiddlewaretoken]").val('')
             $('textarea').val('')
         })
     })
