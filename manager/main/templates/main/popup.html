@@ -5,36 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script 
+    src="https://code.jquery.com/jquery-3.5.1.js" 
+    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+    crossorigin="anonymous">
+</script>
 </head>
 <body>
 
-
-<!-- 
-#popup-message {
-  width: 200px;
-  top: 72px;
-  z-index: 999;
-}
-
-#popup-confirm { 
-  min-width: 250px;
-  max-width: 350px;
-  min-height: 90px;
-  top: 125px;
-  z-index: 999;
-}
-
-#popup-confirm .pop_field{
-  justify-content: center;
-  min-height: 90px;
-}
-
-#popup-message .pop_field{
-  justify-content: center;
-}
-     -->
-
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .b-popup{
         width:100%;
         min-height:100%;
@@ -163,47 +146,67 @@
     }
 </style>
 
-<div class="b-popup" id="popup"></div>
-    <!-- <div class="popup" id='popup_group'>
-        <div class='pop_head'><p>Новая группа</p></div>
-        <div class='pop_field'><p>Название:</p><input id='new_group'/></div>
-        <div class='pop_field'><p>Название:</p><input id='new_group'/></div>
-        <div class='pop_field'><p>Название:</p><input id='new_group'/></div>
-        <div class='pop_footer'>
-            <button style="border-bottom-right-radius: 3px;;border-bottom-left-radius: 3px;" onclick="addGroup()">Создать</button>
-        </div>
-    </div> -->
+<script>
+    function Confirm(text, action) {
+        $('#confirm_text').text(text)
+        $('#popup_z').fadeIn(300)
+        $('#popup-confirm').fadeIn(400)
+
+        $('body').on('click', '#yes', function () {
+            // console.log("yes clicked")
+            // $(this).parents('.dialog-ovelay').find('.dialog').removeClass('zoomIn').addClass('zoomOut');
+            // $(this).parents('.dialog-ovelay').fadeOut(function () {
+            //     $(this).remove();
+            // });
+            action();
+        });
+        
+        $('#no').click(function () {
+            console.log("no clicked")
+            // $(this).parents('.dialog-ovelay').find('.dialog').removeClass('zoomIn').addClass('zoomOut');
+            // $(this).parents('.dialog-ovelay').fadeOut(function () {
+            //     $(this).remove();
+            // });
+        });
+
+    }
 
 
 
-    <div class='popup' id='popup_account_show'>
-        <div class='pop_head'><p>Аккаунт</p></div>
-        <div class='pop_field'><p>Название:</p><input id='account_name_show' autocomplete="off"/></div>
-        <div class='pop_field'><p>Логин:</p><input id='account_login_show' autocomplete="off"/></div>
-        <div class='pop_field'><p>Пароль:</p><input type="password" id='account_password_show'autocomplete="new-password"/></div>
-        <div class='pop_field'><p>URL:</p><input id='account_url_show' autocomplete="off"/></div>
-        <div class='pop_field'><p>Описание:</p><small class='pop_small'>необязательно</small></div>
-        <div class="pop_field" id='description'><textarea id='account_description_show'></textarea></div>
-        <div class='pop_footer'>
-            <!-- <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;">Изменить</button> -->
-            <button style=" border-bottom-right-radius: 3px;" id='del-account' onclick="delAccount()">Удалить</button>
-        </div>
-    </div>
-</div>
+    $(document).on('click', '.link', function(e) {
+        Confirm('Text bitch', function() {
+            console.log("result")
+        })
+    })
+    $('.link').click(function () {
 
-<!-- <div class="b-popup" id="popup">
-    <div class="popup" id="popup-message" >
-        <div class='pop_field'><p align="center" id='message_text'>Some textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome textSome text</p></div>
-    </div>
-    
+        // Confirm('Go to Google', 'Are you sure you want to visit Google Are you sure you want to visit Google visit Google Are you sure you want to visit Google visit Google Are you sure you want to visit Google ' , 'Go', 'Cancel', function () {
+        //     console.log('Hello, bitch')
+        // });
+    });
+
+    function showConfirm(text) {
+        console.log("Hello")
+        $('#confirm_text').text(text)
+        $('#popup_z').fadeIn(300)
+        $('#popup-confirm').fadeIn(400)
+    }
+</script>
+
+<a class="link" href='#'>Click me</a>
+
+<div class="b-popup" id="popup_z" style="display: none;"></div>
 
     <div class="popup" id="popup-confirm" style="display: none;">
         <div class='pop_field'><p align="center" id='confirm_text'>Some text</p></div>
         <div class='pop_footer'>
-            <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;">Да</button>
-            <button style=" border-bottom-right-radius: 3px;" id='del-account'>Нет</button>
+            <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;" id='yes'>Да</button>
+            <button style=" border-bottom-right-radius: 3px;" id='del-account' id='no'>Нет</button>
         </div>
     </div>
-</div> -->
+
+</div>
+
+
 </body>
 </html>
