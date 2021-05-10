@@ -11,7 +11,8 @@ from .forms import LoginForm
 def index(request):
     if request.user.is_authenticated:
         groups = Group.objects.filter(user=request.user)
-        return render(request, 'main/index.html', {'groups': groups})
+        status = True if request.user.check_sum is not None else False
+        return render(request, 'main/index.html', {'groups': groups, 'user': request.user, 'status': status})
     else:
         form = LoginForm()
         return render(request, 'main/login.html', {'form': form})
@@ -22,18 +23,19 @@ def login(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = auth.authenticate(username=cd['username'], password=cd['password'])
+            username = cd['username'].lower()
+            user = auth.authenticate(username=username, password=cd['password'])
             if user is not None:
                 if user.is_active:
                     auth.login(request, user)
                     return redirect(index)
                 else:
-                    return HttpResponse('Disabled account')
+                    return redirect(index)
         else:
-            return HttpResponse('Invalid login')
+            return redirect(index)
     else:
         return redirect(index)
-    return HttpResponse('Invalid request')
+    return redirect(index)
 
 @login_required
 def logout(request):
@@ -112,7 +114,6 @@ def add_account(request):
 def upd_account(request):
     data = request.POST
     a = Account.objects.get(id=data['account_id'])
-    print(data)
     a.name = data['name']
     a.login = data['login']
     a.password = data['password']
@@ -121,3 +122,21 @@ def upd_account(request):
     a.save()
     result = {'id': a.id, 'name': a.name, 'description': a.description}
     return JsonResponse({'status': 'success', 'account': result})
+
+@login_required
+def set_master(request):
+    user = request.user
+    master_key = request.POST['key']
+    user.check_sum = master_key
+    user.save()
+    return JsonResponse({'status': 'success'})
+
+
+@login_required
+def check_master(request):
+    user = request.user
+    master_key = request.POST['key']
+    if user.check_sum == master_key:
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error'})
