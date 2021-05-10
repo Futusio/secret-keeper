@@ -279,12 +279,50 @@ function updAccount(accountId) {
 
 function setMasterKey() {
     // Functions make a request to get all accounts of some group
+    master_key = $('#master_key').val()
+    $.ajax({
+        method: 'POST',
+        url: '/api/set-master',
+        data: {'key': master_key},
+        success: function (response) {
+            if(response['status'] == 'success') {
+                cleanUp()
+                showMessage('Мастер-ключ успешно установлен')
+            } else {
+                showMessage('Какая-то хуйня на сервере произошла')
+            }
+        },
+        error: function (e) {
+            showMessage('Сервер не смог вернуть ответ')
+        }
+    })
 
 }
 
 
 function checkMasterKey() {
     // Functions make a request to get all accounts of some group
-
+    master_key = $('#master_key').val()
+    $.ajax({
+        method: 'POST',
+        url: '/api/check-master',
+        data: {'key': master_key},
+        success: function (response) {
+            if(response['status'] == 'success') {
+                cleanUp()
+                showMessage('Проверка успешно пройдена')
+            } else {
+                masterKeyAttempt += 1
+                if(masterKeyAttempt < 3){
+                    showMessage(`Неправильный мастер-ключ. Попыток: ${masterKeyAttempt}/3`)
+                } else {
+                    document.location.href = 'http://127.0.0.1:8000/logout'
+                }
+            }
+        },
+        error: function (e) {
+            showMessage('Сервер не смог вернуть ответ')
+        }
+    })
 }
 

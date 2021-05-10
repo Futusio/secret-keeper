@@ -48,6 +48,7 @@
         }
 
         $(document).ready(function () {
+            // CSRF Token
             csrftoken = $("input[name=csrfmiddlewaretoken]").attr("value")
 
             $.ajaxSetup({
@@ -57,17 +58,50 @@
                     }
                 }
             });
+            // Master Key logic
+            var condition = ($("#master_key_status").attr('status') == 'True' ? false : true)
+            if(condition){
+                showAlert(`
+                <p style="margin: 0; margin-bottom: 7px;">Необходимо установить мастер-ключ</p>
+                <small style="font-size: 8pt; color:gray;"'>Его нельзя будет изменить или восстановить</small>`)
+            } else {
+                masterKeyAttempt = 0
+                showAlert(`
+                <p style="margin: 0; margin-bottom: 7px;">Необходимо подтвердить мастер-ключ</p>
+                <small style="font-size: 8pt; color:gray;"'>У вас будет три попытки</small>`)
+            }
+
+
         });
+
+        function showMasterKey() {
+            $('#popup_z').fadeOut(300)
+            $('#popup-alert').fadeOut(200)
+            var condition = ($("#master_key_status").attr('status') == 'True' ? false : true)
+            if(condition) {
+                $('#master_key_button').html('Создать')
+                $('#master_key_button').bind('click', setMasterKey)
+                $('#popup').fadeIn(300)
+                $('#popup_key').fadeIn(300)
+            } else {
+                $('#master_key_button').html('Подтвердить')
+                $('#master_key_button').bind('click', checkMasterKey)
+                $('#popup').fadeIn(300)
+                $('#popup_key').fadeIn(300)
+            }
+        }
 
         // Next part
         // Close popul if click ovveride
         $(document).on('click', '#popup', function (e) {
+            if($('#popup_key').is(":visible")) return NaN;
             if (!$(e.target).closest(".popup").length) {
                 cleanUp()
             }
         })
         // Or if click Escape
         $(document).keyup(function (e) {
+            if($('#popup_key').is(":visible")) return NaN;
             if (e.keyCode == 27 && $('.popup').is(":visible") && !$('#popup_z').is(":visible")) {
                 cleanUp()
             }
@@ -151,6 +185,12 @@
             $('#popup_z').fadeIn(300)
             $('#popup-confirm').fadeIn(400)
         }
+
+        function showAlert(text, $true, e) {
+            $('#alert_text').html(text)
+            $('#popup_z').fadeIn(300)
+            $('#popup-alert').fadeIn(400)
+        }
         
         $(document).on('click', '#confirm_no', function () {
                 $('#popup_z').fadeOut(300)
@@ -191,7 +231,7 @@
     <div id='super_body'>
         <!-- Headers -->
         <div id='cap'>
-            <p id='user-info'>Alex Lavrinenko | Student</p>
+            <p id='user-info'>{{ user.first_name }} {{ user.last_name }} | {{ user.job }}</p>
             <form action="/logout" method="POST">
                 {% csrf_token %}
                 <button type="submit" id='logout'><img id='logout_img' src="{% static 'images/32.png' %}"></button>
@@ -200,12 +240,12 @@
         <!-- Main Screen includes accounts and notifications -->
         <div id='main_field'>
             <div id='screen'>
-                <div class='min-account' id='1'>
+                <!-- <div class='min-account' id='1'>
                     <div class='name'>Hello, bitch</div>
                     <div class='description'>A very large text A very large textA very large text A very large text A
                         very large text A very large text A very large text </div>
                     <div class='click'>открыть</div>
-                </div>
+                </div> -->
             </div>
 
             <div id='notifications'>
@@ -238,16 +278,15 @@
             </div>
         </div>
         <!-- Master Key -->
-        <div class="popup" id='popup_key' style="display: none;">
+        <div class="popup" id='popup_key' style="display: none;top: 15%;">
             <!-- <div class='pop_head'> -->
                 <!-- <p>Новая группа</p> -->
             <!-- </div> -->
             <div class='pop_field'>
-                <p>Ключ:</p><input id='new_group' autocomplete='off' />
+                <p>Ключ:</p><input id='master_key' autocomplete='off' />
             </div>
             <div class='pop_footer'>
-                <button style="border-bottom-right-radius: 3px;;border-bottom-left-radius: 3px;"
-                    onclick="addGroup()">Создать</button>
+                <button style="border-bottom-right-radius: 3px;;border-bottom-left-radius: 3px;" id='master_key_button'>Создать</button>
             </div>
         </div>
         <!-- Create Account -->
@@ -345,6 +384,14 @@
                 <button style="border-bottom-right-radius: 3px;" id='confirm_no' data-target=''>Нет</button>
             </div>
         </div>
+        <div class="popup" id="popup-alert" style="display: none; top: 15%; max-width: max-content;">
+            <div class='pop_field' id='alert_text'>
+            </div>
+            <div class='pop_footer'>
+                <button style="border-right: 1px solid #7C868D;border-bottom-left-radius: 3px;" onclick="showMasterKey()">Ок</button>
+            </div>
+        </div>
         <!--  -->
     </div>
+<a id='master_key_status' status='{{ status }}' style="display: none;"></a>
 {% endblock %}

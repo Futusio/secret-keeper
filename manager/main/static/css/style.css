@@ -320,6 +320,14 @@ body {
   justify-content: flex-end;
 }
 
+#alert_text {
+  text-align: center;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
 /* Textarea */
 .pop_small { 
   padding-top: 30px;
