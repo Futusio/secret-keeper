@@ -1,9 +1,11 @@
 from datetime import datetime
+from django.core.exceptions import FieldError, ValidationError
 
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+from django.db.models.fields import Field
 
 
 class ProfileManager(BaseUserManager):
@@ -102,5 +104,23 @@ class Policy(models.Model):
     name = models.CharField(max_length=1024, verbose_name='Name')
     min_length = models.IntegerField(verbose_name='Minimal length')
     max_length = models.IntegerField(verbose_name='Maximum length')
+    template = models.CharField(max_length=256, blank=True, null=True)
     storage_time = models.IntegerField(verbose_name='Storage time')
-    status = models.BooleanField(verbose_name='Status')
+    status = models.BooleanField(verbose_name='Status', default=False, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        """ The conditions to save model """
+        if self.available_activate():
+            raise ValidationError('Only one policy can be active at a time')
+        else:
+            super().save(*args, **kwargs)  # Call the "real" save() method.
+
+    def available_activate(self):
+        if self.status == True and (Policy.exist_active() and self.id is not None):
+            return True
+        else: 
+            return False
+
+    @staticmethod
+    def exist_active():
+        return bool(Policy.objects.filter(status=True))

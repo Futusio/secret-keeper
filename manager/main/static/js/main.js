@@ -2,21 +2,56 @@ class Validator {
 
     pipeline(method, data) {
         // Method recived a method and data and calls validation for data
-        NaN
     }
 
     group(data){
-        Nan
+        var name = data['name']
+        if(name.length < 3){
+            showMessage("Минимальная длина названия - 3 символа")
+        } else if(name.length > 20) {
+            showMessage("Максимальная длина названия - 20 символов")
+        } else if(!/^[a-zа-яА-ЯA-Z0-9\s]+$/.test(name)) {
+            showMessage("Название должно состоять только из букв, цифр и пробела")
+        } else {
+            return true
+        }
+        return false
     }
 
     account(data){
-        Nan
+        // Name
+        var name = data['name']
+        if(name.length < 3){
+            showMessage("Минимальная длина названия - 3 символа")
+            return false
+        } else if(name.length > 16){
+            showMessage("Максимальная длина названия - 16 символов")
+            return false
+        } else if(!/^[a-zа-яА-ЯA-Z0-9\s]+$/.test(name)){
+            showMessage("Строка должна состоять только из букв, цифр и пробела")
+            return false
+        }
+        // Login not check
+        // Password
+        // Policy
+        // Url
+        var url = data['url']
+        if(url.length > 0 && !/^((ftp|http|https):\/\/)?www\.([A-z]+)\.([A-z]{2,})/.test(url)){
+            showMessage("Введите корректный URL")
+            return false
+        }
+        // Description
+
+
+        return true
     }
 
     masterKey(data){
         Nan
     }
 }
+
+const validator = new Validator()
 
 
 function showMessage(text){
@@ -53,6 +88,9 @@ function getGroups() {
 function addGroup() {
     // Functions to create a new group
     var val = $('#new_group').val()
+    if(!validator.group({'name': val})){
+        return NaN
+    }
     $.ajax({
         method: 'POST',
         url: '/api/new-group',
@@ -143,6 +181,10 @@ function addAccount() {
         'password': $('#account_password').val(),
         'url': $('#account_url').val(),
         'description': $('#account_description').val(),
+    }
+
+    if(!validator.account(data)){
+        return NaN
     }
 
     $.ajax({
@@ -316,7 +358,7 @@ function checkMasterKey() {
                 if(masterKeyAttempt < 3){
                     showMessage(`Неправильный мастер-ключ. Попыток: ${masterKeyAttempt}/3`)
                 } else {
-                    document.location.href = 'http://127.0.0.1:8000/logout'
+                    document.location.href = `http://${window.location.hostname}:8000/logout`
                 }
             }
         },
