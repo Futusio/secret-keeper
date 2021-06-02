@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.contrib import admin
 
-from .forms import ProfileCreationForm, ProfileChangeForm, PolicyCreationForm
+from .forms import ProfileCreationForm, ProfileChangeForm, PolicyCreationForm, PolicyCangeForm
 from .models import Profile, Policy
 
 
@@ -26,8 +26,20 @@ class UserAdmin(BaseUserAdmin):
 
 
 class PolicyAdmin(admin.ModelAdmin):
-    form = PolicyCreationForm
-    list_display = ['name', 'min_length', 'max_length', 'storage_time', 'status']
+
+    form = PolicyCangeForm
+    # add_form = PolicyCreationForm
+
+    list_display = ['name', 'min_length', 'max_length', 'template','storage_time', 'status']
+
+    def get_form(self, request, obj=None, **kwargs):
+        print("Hllo, bitch")
+        defaults = {}
+        if obj is None:
+            defaults['form'] = PolicyCangeForm
+        defaults.update(kwargs)
+        return super().get_form(request, obj, **defaults)
+
 
 # Now register the new UserAdmin...
 admin.site.register(Profile, UserAdmin)

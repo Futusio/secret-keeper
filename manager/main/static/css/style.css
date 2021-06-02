@@ -152,10 +152,11 @@ body {
 }
 
 .actions span {
+  display: inline-block;
   width: 18px;
   height: 18px;
-  padding: 5px 10px;
-  line-height: 18px;
+  padding: 7px;
+  line-height: 18px; /* Возможно, проблема здесь */
   font-size: 18px;
   margin-right: 0.5rem;
   border-radius: 50%;

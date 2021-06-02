@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.core import exceptions
 from django.core.exceptions import ValidationError
 from django import forms
 
@@ -56,11 +57,45 @@ class ProfileChangeForm(forms.ModelForm):
         fields = ('password', 'first_name', 'last_name', 'job', 'is_active')
 
 
-class PolicyCreationForm(forms.ModelForm):
-
+class PolicyCangeForm(forms.ModelForm):
     storage_time = forms.IntegerField(help_text='Specify storage time in days')
-    status = forms.BooleanField(label='Active')
+    status = forms.BooleanField(label='Active', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.instance = kwargs['instance']
+        # for i in args:
+            # print("Arg: ", i)
+
+        # for key in kwargs.keys():
+
+            # print("[{}]: [{}]".format(key, kwargs[key]))
+
+    # def clean(self):
+    #     if self.instance.available_activate():
+    #         super().clean()
+    #     else:
+    #         raise ValidationError('Only one policy can be active at a time')
 
     class Meta:
         model = Policy
-        fields = ('name', 'min_length', 'max_length', 'storage_time')
+        # if Policy.objects.get(status=True):
+        fields = ('name', 'min_length', 'max_length', 'template','storage_time')
+        # else:        
+        #     fields = ('name', 'min_length', 'max_length', 'storage_time', 'status')
+
+
+class PolicyCreationForm(forms.ModelForm):
+
+    storage_time = forms.IntegerField(help_text='Specify storage time in days')
+    if len(Policy.objects.filter(status=True)) != 0:
+        status = forms.BooleanField(label='Active', required=False, disabled=True, help_text='Only one police may be activated at the moment')
+    else:
+        status = forms.BooleanField(label='Active', required=False)
+
+    class Meta:
+        model = Policy
+        # if Policy.objects.get(status=True):
+        fields = ('name', 'min_length', 'max_length', 'template', 'storage_time')
+        # else:        
+        #     fields = ('name', 'min_length', 'max_length', 'storage_time', 'status')
