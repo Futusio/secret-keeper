@@ -141,6 +141,12 @@ class Policy(models.Model):
     #     else:
     #         super().save(*args, **kwargs)  # Call the "real" save() method.
 
+    def get_reg(self):
+        if not self.template:
+            self.template = ''
+        result = '%s{%d,%d}' % (self.template, self.min_length, self.max_length)
+        return result
+
     def available_activate(self):
         if self.status == True and (Policy.exist_active() and self.id is not None):
             return True

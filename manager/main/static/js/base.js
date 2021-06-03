@@ -7,6 +7,9 @@
         $(document).ready(function () {
             // CSRF Token
             csrftoken = $("input[name=csrfmiddlewaretoken]").attr("value")
+            policy = $('#policy').text()
+            min_p = $('#policy').attr('min-length')
+            max_p = $('#policy').attr('max-length')
 
             $.ajaxSetup({
                 beforeSend: function (xhr, settings) {
@@ -72,8 +75,20 @@
             $tmp.remove();
         }
 
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
+          }
+
         function generate() {
-            return 'super password'
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()№;%:?*.,";
+            while(text.length < getRandomInt(min_p, max_p)){
+                var chr = possible.charAt(Math.floor(Math.random() * possible.length))
+                text += chr
+            }
+            return text;
         }
 
         $(document).on('dblclick', '#account_password_show', function(e){
@@ -85,8 +100,8 @@
             $('#account_password').val(generate())
         })
 
-        $(document).on('dblclick', '#account_password_show', function(e){
-            $('#account_password_show').val(generate())
+        $(document).on('dblclick', '#account_password_upd', function(e){
+            $('#account_password_upd').val(generate())
         })
         
 
