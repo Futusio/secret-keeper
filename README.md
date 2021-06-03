@@ -6,3 +6,4 @@
 4. запустить sudo docker-compose up -d 
 5. sudo docker-compose exec web python manage.py migrate --noinput
 6. sudo docker-compose exec web python manage.py createsuperuser
+7. sudo docker-compose exec db psql --username=admin --dbname=database
