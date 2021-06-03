@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/add-account', views.add_account, name='add_account'),
     path('api/upd-account', views.upd_account, name='upd_account'),
     path('api/del-account', views.del_account, name='del_account'),
+    path('api/old-accounts', views.old_accounts, name='old_accounts'),
     path('api/set-master', views.set_master, name='set_master'),
     path('api/check-master', views.check_master, name='check_master'),
 ]

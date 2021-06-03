@@ -1,18 +1,29 @@
+from datetime import date, datetime
+
+from django.db.models.query import RawQuerySet
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt # Del after
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth 
 
-from .models import Group, Account
+from .models import Group, Account, Policy
 from .forms import LoginForm
 
-# Create your views here.
+
+def get_old_accounts(request):
+    policy = Policy.objects.filter(status=True)[0]
+    accounts = Account.objects.filter(user=request.user)
+    accounts = list(filter(lambda x: x.is_fresh(policy.storage_time), accounts))
+        # print(accounts)
+    accounts = [{'id': x.id, 'days': x.get_days(policy.storage_time),'name': x.name} for x in accounts]
+    return accounts
+
 def index(request):
     if request.user.is_authenticated:
         groups = Group.objects.filter(user=request.user)
         status = True if request.user.check_sum is not None else False
-        return render(request, 'main/index.html', {'groups': groups, 'user': request.user, 'status': status})
+        accounts = get_old_accounts(request)
+        return render(request, 'main/index.html', {'groups': groups, 'user': request.user, 'status': status, 'accounts': accounts})
     else:
         form = LoginForm()
         return render(request, 'main/login.html', {'form': form})
@@ -70,7 +81,7 @@ def get_accounts(request):
     for account in accounts:
         result.update({account.id: {
             'name': account.name,
-            'description': account.description,
+            'description': account.get_description(),
         }})
 
     return JsonResponse({'status': 'success', 'accounts': result})
@@ -105,23 +116,29 @@ def add_account(request):
         login=request.POST['login'], url=request.POST['url'], 
         description=request.POST['description']
         )
-
     a.save()
-    result = {'id': a.id, 'name': a.name, 'description': a.description}
+    result = {'id': a.id, 'name': a.name, 'description': a.get_description()}
     return JsonResponse({'status': 'success', 'account': result})
 
 @login_required
 def upd_account(request):
     data = request.POST
     a = Account.objects.get(id=data['account_id'])
+    if not data['status']:
+        a.last_update = datetime.now()
     a.name = data['name']
     a.login = data['login']
     a.password = data['password']
     a.url = data['url']
     a.description = data['description']
     a.save()
-    result = {'id': a.id, 'name': a.name, 'description': a.description}
+    result = {'id': a.id, 'name': a.name, 'description': a.get_description()}
     return JsonResponse({'status': 'success', 'account': result})
+
+@login_required
+def old_accounts(request):
+    accounts = get_old_accounts(request)
+    return JsonResponse({'status': 'success', 'accounts': accounts})
 
 @login_required
 def set_master(request):
@@ -130,7 +147,6 @@ def set_master(request):
     user.check_sum = master_key
     user.save()
     return JsonResponse({'status': 'success'})
-
 
 @login_required
 def check_master(request):
