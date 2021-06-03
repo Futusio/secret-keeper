@@ -36,7 +36,7 @@ class Validator {
         // Policy
         // Url
         var url = data['url']
-        if(url.length > 0 && !/^((ftp|http|https):\/\/)?www\.([A-z]+)\.([A-z]{2,})/.test(url)){
+        if(url.length > 0 && !/^((ftp|http|https):\/\/)|^(www\.)([A-z]+)\.([A-z]{2,})/.test(url)){
             showMessage("Введите корректный URL")
             return false
         }
@@ -80,6 +80,30 @@ function cleanUp(){
 
 // AJAX
 
+function getOldAccounts() {
+    $.ajax({
+        method: 'POST',
+        url: '/api/old-accounts',
+        success: function (response) {
+            if(response['status'] == 'success') {
+                $('#nots').html('')
+                for(account of response['accounts']){
+                    $('#nots').append(`
+                    <li>Истекает срок действия пароля от аккаунта 
+                    <span class='left_time' attempt-id='${account['id']}'>${account['name']}</span><br> 
+                    Дней осталось: ${account['days']}</li>
+                    `)
+                }
+            } else {
+                showMessage('Неизвестная ошибка')
+            }
+        },
+        error: function (e) {
+            showMessage('Неизвестная ошибка')
+        }
+    })
+}
+
 function addGroup() {
     // Functions to create a new group
     var val = $('#new_group').val()
@@ -121,6 +145,7 @@ function delGroup(id) {
                 showMessage('Группа успешно удалена')
                 $('#screen').html('')
                 $(`[group-id=${id}]`).remove()
+                getOldAccounts()
             } else {
                 showMessage('Неизвестная ошибка')
             }
@@ -194,7 +219,7 @@ function addAccount() {
                 if(account.description == "") {
                     var description = 'Для данного аккаунта описание отсутствует'
                 } else {
-                    var description = 'Для данного аккаунта описание отсутствует'
+                    var description = account['description']
                 }
                 $('#screen').append(`
                 <div class='min-account' account-id=${account.id}>
@@ -203,6 +228,7 @@ function addAccount() {
                     <div class='click'>открыть</div>
                 </div>   
                 `)
+                getOldAccounts()
             } else {
                 showMessage('Неизвестная ошибка')
             }
@@ -254,6 +280,7 @@ function delAccount(id) {
                 cleanUp()
                 showMessage('Аккаунт успешно удален')
                 $(`[account-id=${id}]`).remove()
+                getOldAccounts()
             } else {
                 showMessage('Ошибка получения информации об аккаунте')
                 cleanUp()
@@ -268,6 +295,7 @@ function delAccount(id) {
 
 
 function updAccount(accountId) {
+    var status = $('#account_password_show').val() == $('#account_password_upd').val()
     var data = {
         'account_id': accountId,
         'name': $('#account_name_upd').val(),
@@ -275,7 +303,9 @@ function updAccount(accountId) {
         'password': CryptoJS.AES.encrypt($('#account_password_upd').val(), master_key).toString(),
         'url': $('#account_url_upd').val(),
         'description': $('#account_description_upd').val(),
+        'status': status,
     }
+    console.log('status is, ', status)
 
     $.ajax({
         method: 'POST',
@@ -289,20 +319,14 @@ function updAccount(accountId) {
                 if(account.description == "") {
                     var description = 'Для данного аккаунта описание отсутствует'
                 } else {
-                    var description = 'Для данного аккаунта описание отсутствует'
+                    var description = account['description']
                 }
                 $(`[account-id=${account.id}]`).html(`
                     <div class='name'>${account.name}</div>
                     <div class='description' align='center'>${description}</div>
                     <div class='click'>открыть</div>
                 `)
-                // $('#screen').append(`
-                // <div class='min-account' account-id=${account.id}>
-                //     <div class='name'>${account.name}</div>
-                //     <div class='description' align='center'>${account.description}</div>
-                //     <div class='click'>открыть</div>
-                // </div>   
-                // `)
+                getOldAccounts()
             } else {
                 showMessage('Неизвестная ошибка')
             }

@@ -1,0 +1,10 @@
+итого 512
+drwxrwxr-x 6 xymis xymis   4096 июн  3 15:11 .
+drwxrwxr-x 5 xymis xymis   4096 июн  3 13:51 ..
+-rw-rw-r-- 1 xymis xymis    717 июн  3 14:47 docker-compose.yml
+drwxrwxr-x 8 xymis xymis   4096 июн  3 14:30 .git
+-rw-rw-r-- 1 xymis xymis 494583 июн  3 13:44 .gitignore
+drwxrwxr-x 4 xymis xymis   4096 июн  3 14:10 manager
+-rw-rw-r-- 1 xymis xymis      0 июн  3 15:11 test
+drwxrwxr-x 4 xymis xymis   4096 апр 24 23:06 venv
+drwxrwxr-x 2 xymis xymis   4096 апр 25 00:41 .vscode

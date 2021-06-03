@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 from django.core.exceptions import FieldError, ValidationError
 
 from django.db import models
@@ -6,7 +7,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 from django.db.models.fields import Field
-
+import re
 
 class ProfileManager(BaseUserManager):
     def create_user(self, username, first_name=None, last_name=None, password=None, job=None, *args, **kwargs):
@@ -97,6 +98,30 @@ class Account(models.Model):
     description = models.TextField()
     last_update = models.DateTimeField(default=datetime.now)
 
+    def get_description(self):
+        if len(self.description) > 128:
+            description = re.search('^(.{1,128})\s', self.description).group(1)
+            description = description + '...'
+        else:
+            description = self.description
+        return description
+
+    def get_last_update(self):
+        now = datetime.today().replace(tzinfo=pytz.utc)
+        diff = now - self.last_update
+        diff = diff.days
+        return diff
+
+    def is_fresh(self, storage_time):
+        diff = storage_time - self.get_last_update()
+        return False if diff > 3 else True
+
+    def get_days(self, storage_time):
+        diff = storage_time - self.get_last_update()
+        if diff < 0: 
+            return 0
+        return diff
+
 
 class Policy(models.Model):
     """ The model define when the user will receive a notification
@@ -109,12 +134,12 @@ class Policy(models.Model):
     storage_time = models.IntegerField(verbose_name='Storage time')
     status = models.BooleanField(verbose_name='Status', default=False, blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        """ The conditions to save model """
-        if self.available_activate():
-            raise ValidationError('Only one policy can be active at a time')
-        else:
-            super().save(*args, **kwargs)  # Call the "real" save() method.
+    # def save(self, *args, **kwargs):
+    #     """ The conditions to save model """
+    #     if self.available_activate():
+    #         raise ValidationError('Only one policy can be active at a time')
+    #     else:
+    #         super().save(*args, **kwargs)  # Call the "real" save() method.
 
     def available_activate(self):
         if self.status == True and (Policy.exist_active() and self.id is not None):

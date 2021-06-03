@@ -63,5 +63,5 @@ class PolicyCreationForm(forms.ModelForm):
 
     class Meta:
         model = Policy
-        fields = ('name', 'min_length', 'max_length', 'template', 'storage_time')
+        fields = ('name', 'min_length', 'max_length', 'template', 'storage_time', 'status')
 
