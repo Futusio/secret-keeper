@@ -9,7 +9,7 @@ from django.db.models.fields import Field
 
 
 class ProfileManager(BaseUserManager):
-    def create_user(self, username, first_name=None, last_name=None, password=None, job=None):
+    def create_user(self, username, first_name=None, last_name=None, password=None, job=None, *args, **kwargs):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -20,14 +20,15 @@ class ProfileManager(BaseUserManager):
         user = self.model(
             username=username,
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
+            job=job,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, password=None):
+    def create_superuser(self, username, password=None, *args, **kwargs):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -55,7 +56,7 @@ class Profile(AbstractBaseUser):
     objects = ProfileManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.username

@@ -1,0 +1,28 @@
+# docker-compose.yml
+version: '3.7'
+services:
+  web:
+    build: ./manager
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python manage.py runserver 0.0.0.0:8000'
+    volumes:
+      - ./manager:/manager
+    ports:
+      - 8008:8000
+    environment:
+      DEBUG: 1
+      SECRET_KEY: django-insecure-ui=i92hcvv$$nq*4jwa8%zyya_#%5fp*!*z$$&mtizokkj_@#u!=
+      DATABASE_URL: postgresql://admin:password@db:5432/database
+    depends_on:
+      - db
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=database
+volumes:
+  postgres_data:
