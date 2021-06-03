@@ -79,11 +79,6 @@ function cleanUp(){
 }
 
 // AJAX
-function getGroups() {
-    // Functions returns list of groups 
-
-}
-
 
 function addGroup() {
     // Functions to create a new group
@@ -177,8 +172,8 @@ function addAccount() {
     var data = {
         'group_id': group_id,
         'name': $('#account_name').val(),
-        'login': $('#account_login').val(),
-        'password': $('#account_password').val(),
+        'login': CryptoJS.AES.encrypt($('#account_login').val(), master_key).toString(),
+        'password': CryptoJS.AES.encrypt($('#account_password').val(), master_key).toString(),
         'url': $('#account_url').val(),
         'description': $('#account_description').val(),
     }
@@ -231,8 +226,8 @@ function getAccount(id) {
                 $('#popup').fadeIn(300)
                 $('#popup_account_show').fadeIn(300)
                 $('#account_name_show').val(account.name)
-                $('#account_login_show').val(account.login)
-                $('#account_password_show').val(account.password)
+                $('#account_login_show').val(CryptoJS.AES.decrypt(account.login, master_key).toString(CryptoJS.enc.Utf8)),
+                $('#account_password_show').val(CryptoJS.AES.decrypt(account.password, master_key).toString(CryptoJS.enc.Utf8))
                 $('#account_url_show').val(account.url)
                 $('#account_description_show').val(account.description)
             } else {
@@ -276,8 +271,8 @@ function updAccount(accountId) {
     var data = {
         'account_id': accountId,
         'name': $('#account_name_upd').val(),
-        'login': $('#account_login_upd').val(),
-        'password': $('#account_password_upd').val(),
+        'login': CryptoJS.AES.encrypt($('#account_login_upd').val(), master_key).toString(),
+        'password': CryptoJS.AES.encrypt($('#account_password_upd').val(), master_key).toString(),
         'url': $('#account_url_upd').val(),
         'description': $('#account_description_upd').val(),
     }
@@ -321,7 +316,7 @@ function updAccount(accountId) {
 
 function setMasterKey() {
     // Functions make a request to get all accounts of some group
-    master_key = $('#master_key').val()
+    master_key = CryptoJS.SHA256($('#master_key').val()).toString()
     $.ajax({
         method: 'POST',
         url: '/api/set-master',
@@ -344,7 +339,7 @@ function setMasterKey() {
 
 function checkMasterKey() {
     // Functions make a request to get all accounts of some group
-    master_key = $('#master_key').val()
+    master_key = CryptoJS.SHA256($('#master_key').val()).toString()
     $.ajax({
         method: 'POST',
         url: '/api/check-master',
