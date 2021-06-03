@@ -14,16 +14,26 @@ def get_old_accounts(request):
     policy = Policy.objects.filter(status=True)[0]
     accounts = Account.objects.filter(user=request.user)
     accounts = list(filter(lambda x: x.is_fresh(policy.storage_time), accounts))
-        # print(accounts)
     accounts = [{'id': x.id, 'days': x.get_days(policy.storage_time),'name': x.name} for x in accounts]
     return accounts
+
+def get_policy(request):
+    policy = Policy.objects.filter(status=True)[0]
+    result = {
+        'min': policy.min_length,
+        'max': policy.max_length,
+        'reg': policy.get_reg()
+    }
+    return result
 
 def index(request):
     if request.user.is_authenticated:
         groups = Group.objects.filter(user=request.user)
+        policy = Policy.objects.filter(status=True)[0]
         status = True if request.user.check_sum is not None else False
         accounts = get_old_accounts(request)
-        return render(request, 'main/index.html', {'groups': groups, 'user': request.user, 'status': status, 'accounts': accounts})
+        return render(request, 'main/index.html', {'groups': groups, 'user': request.user, 'status': status,
+                                                    'accounts': accounts, 'policy': get_policy(request)})
     else:
         form = LoginForm()
         return render(request, 'main/login.html', {'form': form})

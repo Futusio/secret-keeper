@@ -19,7 +19,6 @@ class Validator {
     }
 
     account(data){
-        // Name
         var name = data['name']
         if(name.length < 3){
             showMessage("Минимальная длина названия - 3 символа")
@@ -31,23 +30,32 @@ class Validator {
             showMessage("Строка должна состоять только из букв, цифр и пробела")
             return false
         }
-        // Login not check
-        // Password
-        // Policy
-        // Url
         var url = data['url']
         if(url.length > 0 && !/^((ftp|http|https):\/\/)|^(www\.)([A-z]+)\.([A-z]{2,})/.test(url)){
             showMessage("Введите корректный URL")
             return false
         }
-        // Description
 
+        var password = data['password']
+        var template = new RegExp(policy)
+        if(!template.test(password)){
+            showMessage("Пароль не соответствует политике. Обратитесь к администратору")
+            return false
+        }
 
         return true
     }
 
     masterKey(data){
-        Nan
+        key = data['key']
+        if(key.length < 4){
+            showMessage("Минимальная длина 4 символа")
+            return false
+        } else if(!/^[a-zA-Z0-9]+/.test(key)){
+            showMessage("Ключ может состоять только из букв и цифр")
+            return false
+        }
+        return true
     }
 }
 
@@ -195,10 +203,10 @@ function getAccounts(id) {
 function addAccount() {
     // Functions make a request to get all accounts of some group
     var data = {
+        'password': $('#account_password').val(),
         'group_id': group_id,
         'name': $('#account_name').val(),
         'login': CryptoJS.AES.encrypt($('#account_login').val(), master_key).toString(),
-        'password': CryptoJS.AES.encrypt($('#account_password').val(), master_key).toString(),
         'url': $('#account_url').val(),
         'description': $('#account_description').val(),
     }
@@ -206,6 +214,8 @@ function addAccount() {
     if(!validator.account(data)){
         return NaN
     }
+
+    data['password'] = CryptoJS.AES.encrypt($('#account_password').val(), master_key).toString()
 
     $.ajax({
         method: 'POST',
@@ -300,12 +310,17 @@ function updAccount(accountId) {
         'account_id': accountId,
         'name': $('#account_name_upd').val(),
         'login': CryptoJS.AES.encrypt($('#account_login_upd').val(), master_key).toString(),
-        'password': CryptoJS.AES.encrypt($('#account_password_upd').val(), master_key).toString(),
+        'password': $('#account_password_upd').val(),
         'url': $('#account_url_upd').val(),
         'description': $('#account_description_upd').val(),
         'status': status,
     }
-    console.log('status is, ', status)
+
+    if(!validator.account(data)){
+        return NaN
+    }
+
+    data['password'] = CryptoJS.AES.encrypt($('#account_password_upd').val(), master_key).toString()
 
     $.ajax({
         method: 'POST',
@@ -341,6 +356,9 @@ function updAccount(accountId) {
 function setMasterKey() {
     // Functions make a request to get all accounts of some group
     master_key = CryptoJS.SHA256($('#master_key').val()).toString()
+    if(!validator.masterKey($('#master_key').val())){
+        return Nan
+    }
     $.ajax({
         method: 'POST',
         url: '/api/set-master',
@@ -350,7 +368,7 @@ function setMasterKey() {
                 cleanUp()
                 showMessage('Мастер-ключ успешно установлен')
             } else {
-                showMessage('Какая-то хуйня на сервере произошла')
+                showMessage('Неизвестная ошибка')
             }
         },
         error: function (e) {
