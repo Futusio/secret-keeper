@@ -356,7 +356,7 @@ function updAccount(accountId) {
 function setMasterKey() {
     // Functions make a request to get all accounts of some group
     master_key = CryptoJS.SHA256($('#master_key').val()).toString()
-    if(!validator.masterKey($('#master_key').val())){
+    if(!validator.masterKey({'key': $('#master_key').val()})){
         return Nan
     }
     $.ajax({
