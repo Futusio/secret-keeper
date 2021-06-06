@@ -47,7 +47,7 @@ class Validator {
     }
 
     masterKey(data){
-        key = data['key']
+        var key = data['key']
         if(key.length < 4){
             showMessage("Минимальная длина 4 символа")
             return false
@@ -357,7 +357,7 @@ function setMasterKey() {
     // Functions make a request to get all accounts of some group
     master_key = CryptoJS.SHA256($('#master_key').val()).toString()
     if(!validator.masterKey({'key': $('#master_key').val()})){
-        return Nan
+        return NaN
     }
     $.ajax({
         method: 'POST',
@@ -377,7 +377,6 @@ function setMasterKey() {
     })
 
 }
-
 
 function checkMasterKey() {
     // Functions make a request to get all accounts of some group
