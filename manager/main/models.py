@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime
 import pytz
 from django.core.exceptions import FieldError, ValidationError
