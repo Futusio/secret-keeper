@@ -4,6 +4,7 @@
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
 
+        
         $(document).ready(function () {
             // CSRF Token
             csrftoken = $("input[name=csrfmiddlewaretoken]").attr("value")

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core import exceptions
 from django.core.exceptions import ValidationError
