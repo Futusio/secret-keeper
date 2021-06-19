@@ -9,8 +9,8 @@ services:
     ports:
       - 8000:8000
     environment:
-      DEBUG: 1
-      SECRET_KEY: django-insecure-ui=i92hcvv$$nq*4jwa8%zyya_#%5fp*!*z$$&mtizokkj_@#u!=
+      DEBUG: 
+      SECRET_KEY: 
       DATABASE_URL: postgresql://admin:password@db:5432/database
     depends_on:
       - db

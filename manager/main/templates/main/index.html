@@ -35,6 +35,9 @@
                     <p>Уведомления</p>
                 </div>
                 <ul id='nots'>
+                    {% if texts|length == 0 %}
+                        <p style="text-align: center;">Нет уведомлений</p>
+                    {% endif %}
                     {% for account in accounts %}
                         <li class=''>Истекает срок действия пароля от аккаунта <span class='left_time' attempt-id='{{ account.id }}'>{{ account.name }}</span><br> Дней осталось: {{ account.days }}</li>
                     {% endfor %}

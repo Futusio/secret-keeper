@@ -10,15 +10,25 @@ from .models import Group, Account, Policy
 from .forms import LoginForm
 
 
+def make_blank_policy():
+    policy = Policy(name='blank', min_length=0, max_length=256, template='[*]', storage_time=1000000, status=True)
+    return policy
+
 def get_old_accounts(request):
-    policy = Policy.objects.filter(status=True)[0]
+    try:
+        policy = Policy.objects.filter(status=True)[0]
+    except IndexError:
+        policy = make_blank_policy()
     accounts = Account.objects.filter(user=request.user)
     accounts = list(filter(lambda x: x.is_fresh(policy.storage_time), accounts))
     accounts = [{'id': x.id, 'days': x.get_days(policy.storage_time),'name': x.name} for x in accounts]
     return accounts
 
 def get_policy(request):
-    policy = Policy.objects.filter(status=True)[0]
+    try:
+        policy = Policy.objects.filter(status=True)[0]
+    except IndexError:
+        policy = make_blank_policy()
     result = {
         'min': policy.min_length,
         'max': policy.max_length,
@@ -29,7 +39,6 @@ def get_policy(request):
 def index(request):
     if request.user.is_authenticated:
         groups = Group.objects.filter(user=request.user)
-        policy = Policy.objects.filter(status=True)[0]
         status = True if request.user.check_sum is not None else False
         accounts = get_old_accounts(request)
         return render(request, 'main/index.html', {'groups': groups, 'user': request.user, 'status': status,
