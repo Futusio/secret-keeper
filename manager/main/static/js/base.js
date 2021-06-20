@@ -84,10 +84,13 @@
 
         function generate() {
             var text = "";
+            var r = $('#policy').text().match(/(\[.*\])/)[1]
             var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()№;%:?*.,";
             while(text.length < getRandomInt(min_p, max_p)){
                 var chr = possible.charAt(Math.floor(Math.random() * possible.length))
-                text += chr
+                if(chr.match(r)){
+                    text += chr
+                }
             }
             return text;
         }
